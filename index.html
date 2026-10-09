@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Secure Medical Record Management</title><link rel="stylesheet" href="css/style.css"></head><body>
+<header><h1>Secure Medical Records · Ethereum + IPFS</h1>
+<div id="status"><span class="dot" id="dot"></span><span id="stxt">Wallet not connected</span>
+<button id="btnConnect" class="alt">Connect wallet</button><button id="btnReset" class="alt">Reset</button></div></header>
+<div class="layout"><nav><a href="#home">Home</a><a href="#register">Patient registration</a><a href="#add">Add record</a><a href="#records">My records</a><a href="#access">Access management</a><a href="#doctor">Doctor</a></nav>
+<main>
+<section id="home"><h2>Your records, encrypted and in your control</h2>
+<p>Files are encrypted in your browser, stored on IPFS, and referenced by a smart contract on Sepolia. The contract decides who may get the decryption key.</p>
+<p><b>How it works:</b> encrypt file, upload ciphertext to IPFS, save the CID on-chain; a doctor requests the key, the server checks the contract, and the file is decrypted locally.</p>
+<p class="note">Stack: HTML/CSS/JS, ethers.js, MetaMask, Solidity, IPFS (Pinata), Node backend. Use fictional data only. Blockchain data is public; revoking access cannot erase files already downloaded.</p></section>
+
+<section id="register"><h2>Patient registration</h2>
+<form id="fReg"><label>Patient ID<input id="pid" required></label><label>Full name<input id="pname" required></label>
+<label>Age<input id="page" type="number" min="0" max="120" required></label>
+<label>Gender<select id="pgender"><option>Female</option><option>Male</option><option>Other</option></select></label>
+<label>Contact number<input id="pphone" pattern="[0-9+ ]{7,15}" required></label><label>Email<input id="pemail" type="email" required></label>
+<button>Register wallet on-chain</button></form>
+<p class="note">Personal details stay in this browser (localStorage). The chain stores only your wallet address as a registered patient.</p></section>
+
+<section id="add"><h2>Add medical record</h2>
+<form id="fAdd"><label>Patient ID<input id="rpid" required></label><label>Record title<input id="rtitle" required></label>
+<label>Type<select id="rtype"><option>Blood Test</option><option>X-Ray</option><option>MRI Scan</option><option>Prescription</option><option>Medical Report</option><option>Other</option></select></label>
+<label>Hospital / clinic<input id="rhosp" required></label><label>Doctor name or wallet<input id="rdoc"></label>
+<label>Record date<input id="rdate" type="date" required></label><label>Notes<textarea id="rnotes"></textarea></label>
+<label>Document (PDF, JPG, PNG)<input id="rfile" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label>
+<label><input id="rconsent" type="checkbox" style="width:auto"> I consent to storing this encrypted record.</label>
+<progress id="prog" value="0" max="100" hidden></progress>
+<button id="btnUp">Upload medical record</button><button type="reset" class="alt">Clear form</button><button type="button" class="alt" onclick="location.hash='records'">View submitted records</button></form>
+<p class="note">Title, notes and hospital stay in this browser; the chain gets only the CID, type and date.</p></section>
+
+<section id="records"><h2>Medical records</h2><div class="stats"><div class="stat">Records <b id="cnt">0</b></div></div>
+<input id="q" placeholder="Search title…" style="max-width:240px"> <select id="ft" style="max-width:180px"><option value="">All types</option><option>Blood Test</option><option>X-Ray</option><option>MRI Scan</option><option>Prescription</option><option>Medical Report</option><option>Other</option></select> <input id="fd" type="date" style="max-width:170px">
+<div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Date</th><th>CID</th><th>Tx hash</th><th>Status</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></section>
+
+<section id="access"><h2>Access management</h2>
+<label>Record ID<input id="aid" type="number" min="1"></label><label>Doctor wallet (must be verified by admin)<input id="adoc" placeholder="0x…"></label>
+<button id="btnGrant">Grant access</button><button id="btnRevoke" class="alt">Revoke access</button><button id="btnCheck" class="alt">Check permission</button>
+<p id="amsg" class="note"></p><p class="note">Revocation blocks future key delivery; it cannot erase copies a doctor already downloaded.</p></section>
+
+<section id="doctor"><h2>Doctor dashboard</h2><p>Wallet: <b id="dwallet">—</b></p>
+<label>Record ID<input id="did" type="number" min="1"></label>
+<button id="btnReq">Request access</button><button id="btnView" class="alt">Retrieve &amp; decrypt</button>
+<pre id="dmeta" class="note"></pre></section>
+</main></div><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+<script src="config/config.js"></script><script src="js/app.js"></script></body></html>
